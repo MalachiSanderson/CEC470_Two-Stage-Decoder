@@ -1,0 +1,2 @@
+# CEC470_Two-Stage-Decoder
+ Design a simple processor based on the simplified 2-step instruction cycle shown in Figure 3.3 of our textbook. You will be creating two functions in software, one to simulate the fetch next instruction cycle, fetchNextInstruction(), and one to simulate the execute instruction cycle, executeInstruction(). Neither of these functions will have parameters nor will they return values. They will operation on global data meant to simulate the registers and memory of the processor.
