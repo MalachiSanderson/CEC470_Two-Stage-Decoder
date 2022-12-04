@@ -28,13 +28,20 @@
 #include <string.h>
 #include <vector>
 
-#define MEMORY_SIZE 65536
-unsigned char memory[MEMORY_SIZE];
+#define INPUT_FILE "mem_in.txt"
+#define OUTPUT_FILE "mem_out.txt"
 
+#define MEMORY_SIZE 65536
 #define PRINT(x) std::cout << x << std::endl;
+
+#pragma region ATTRIBUTES
+
+//Main Memory...
+unsigned char memory[MEMORY_SIZE];
 
 //Program counter (16 bit) used to hold the address of the next instruction to execute. It is initialized to zero.
 uint16_t PC = 0;
+uint16_t prev_PC;
 
 //Instruction register (8 bit) used to hold the current instruction being executed
 uint8_t IR = 0;
@@ -45,16 +52,36 @@ uint16_t MAR = 0;
 //Accumulator (8 bit) used to operate on data
 uint8_t ACC = 0;
 
+#pragma endregion
+
+enum operation_types 
+{
+    Math,
+    Memory,
+    Branch
+};
+
+#pragma region METHODS
+
 void fetchNextInstruction(void);
 
 void executeInstruction(void);
 
 std::vector<uint8_t> parseFileData(std::string fileName);
 
-void determineOp(uint8_t opcode);
+operation_types determineOp(uint8_t opcode);
 
 int determineIncrement(uint8_t opcode);
 
+void mathOps(uint8_t opcode);
+void memoryOps(uint8_t opcode);
+void branchOps(uint8_t opcode);
+
+void writeMemoryToFile(unsigned char []);
+
+void printProgCommands(std::vector<uint8_t> prog);
+
+#pragma endregion
 
 
 #pragma region MASKS
@@ -107,13 +134,13 @@ int determineIncrement(uint8_t opcode);
 //if MS 5 bits are 00010, its a branch/jump op. (AND should equal 0x10 or dec 16)
 #define BR_OP_MASK 0b11111000
 #define BR_TYPE_MASK 0b00000111
-#define BRA 0b00000000 //unconditional branch
-#define BRZ 0b00000001 
-#define BNE 0b00000010
-#define BLT 0b00000011
-#define BLE 0b00000100
-#define BGT 0b00000101
-#define BGE 0b00000110
+#define BRA 0b00000000 //unconditional branch/always branch.
+#define BRZ 0b00000001 //Branch if ACC = 0
+#define BNE 0b00000010  //Branch if ACC != 0
+#define BLT 0b00000011  //Branch if ACC < 0
+#define BLE 0b00000100  //Branch if ACC <= 0
+#define BGT 0b00000101  //Branch if ACC > 0
+#define BGE 0b00000110  //Branch if ACC >= 0
 #pragma endregion
 
 #pragma region SPECIAL OPS
